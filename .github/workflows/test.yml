@@ -579,21 +579,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - run: |
-          uname -a
-          echo $RUNNER_OS
-        shell: bash
-        
       - name: Setup PostgreSQL
-        run: |
-          export PGDATA="$RUNNER_TEMP/pgdata"
-          pg_ctl init
-          echo "PGUSER=$USER" >> $GITHUB_ENV
-          pg_ctl start
-          createuser --createdb prisma
-          createdb -O prisma prisma
-          psql -c "ALTER USER prisma PASSWORD 'prisma';" prisma
-        shell: bash
+        run: bash .github/workflows/setup-postgres.sh
 
       - name: Cache .pnpm-store
         uses: actions/cache@v1
