@@ -564,19 +564,23 @@ jobs:
           flags: generator-helper,${{ matrix.os }}
           name: generator-helper-${{ matrix.os }}
 
-  macos-with-dbs:
+  no-docker:
     timeout-minutes: 30
-    # macos-11 will become macos-latest on Dec 13
-    # https://github.com/actions/virtual-environments/issues/4060
-    runs-on: macos-11
+    runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
       matrix:
+        # macos-11 will become macos-latest on Dec 13
+        # https://github.com/actions/virtual-environments/issues/4060
+        os: [macos-11, windows-latest]
         node: [16]
 
     steps:
       - uses: actions/checkout@v2
+
+      - run: uname -a
+        shell: bash
         
       - name: Setup PostgreSQL
         run: |
@@ -587,6 +591,7 @@ jobs:
           createuser --createdb prisma
           createdb -O prisma prisma
           psql -c "ALTER USER prisma PASSWORD 'prisma';" prisma
+        shell: bash
 
       - name: Cache .pnpm-store
         uses: actions/cache@v1
